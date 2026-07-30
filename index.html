@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>AI Hook Generator — Offline Hook &amp; Overlay Studio</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================= TOP BAR ============================= -->
+<header class="topbar">
+  <div class="topbar__brand">
+    <span class="rec-dot" aria-hidden="true"></span>
+    <div class="topbar__title">
+      <h1>AI HOOK GENERATOR</h1>
+      <p>Offline hook writer &amp; overlay studio · 9:16 export</p>
+    </div>
+  </div>
+
+  <div class="topbar__actions">
+    <div class="clip-status" id="clipStatus">
+      <span class="clip-status__dot" id="clipStatusDot"></span>
+      <span id="clipStatusText">No clip loaded</span>
+    </div>
+    <button class="btn btn--ghost" id="btnNewProject" title="Clear and start over">New</button>
+    <button class="btn btn--accent" id="btnExport" disabled>Export MP4</button>
+  </div>
+</header>
+
+<!-- ============================= WORKSPACE ============================= -->
+<main class="workspace">
+
+  <!-- ---------------- LEFT: SOURCE + AI ANALYSIS + HOOK LIBRARY ---------------- -->
+  <section class="panel panel--left" aria-label="Source, analysis and hook library">
+
+    <div class="panel__section" id="uploadSection">
+      <h2 class="panel__heading"><span class="tick">01</span>Source clip</h2>
+
+      <label class="dropzone" id="dropzone" for="fileInput">
+        <input type="file" id="fileInput" accept="video/mp4,video/quicktime,video/webm,video/*,image/*" hidden>
+        <svg class="dropzone__icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <rect x="6" y="6" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
+          <path d="M16 30l6-8 5 6 4-5 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="18" cy="17" r="2.4" fill="currentColor"/>
+        </svg>
+        <span class="dropzone__text"><strong>Drop a video or image</strong><br>MP4, MOV, WEBM, JPG, PNG</span>
+      </label>
+
+      <div class="source-preview" id="sourcePreview" hidden>
+        <video id="sourceThumbVideo" muted playsinline></video>
+        <img id="sourceThumbImage" alt="Uploaded image preview" hidden>
+        <div class="source-preview__meta">
+          <span id="sourceFileName">—</span>
+          <button class="btn btn--tiny btn--ghost" id="btnReplaceSource">Replace</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel__section" id="analysisSection">
+      <h2 class="panel__heading"><span class="tick">02</span>AI signal read</h2>
+      <p class="panel__hint">Reads the first few seconds — motion, light, color, subject presence, and audio energy — entirely on this device. No upload leaves your browser.</p>
+
+      <div class="analysis-idle" id="analysisIdle">Load a clip to run the read.</div>
+
+      <div class="analysis-progress" id="analysisProgress" hidden>
+        <div class="analysis-progress__bar"><div class="analysis-progress__fill" id="analysisProgressFill"></div></div>
+        <span id="analysisProgressLabel">Sampling frames…</span>
+      </div>
+
+      <div class="analysis-results" id="analysisResults" hidden>
+        <div class="signal-grid" id="signalGrid"><!-- filled by JS --></div>
+        <div class="palette-row" id="paletteRow"><!-- filled by JS --></div>
+        <div class="category-weights" id="categoryWeights"><!-- filled by JS --></div>
+        <button class="btn btn--ghost btn--full" id="btnRegenerateHooks">Regenerate hook selection</button>
+      </div>
+    </div>
+
+    <div class="panel__section panel__section--grow" id="hookLibrarySection">
+      <h2 class="panel__heading"><span class="tick">03</span>Hook library <span class="count-badge" id="hookCount">0</span></h2>
+
+      <div class="category-filters" id="categoryFilters"><!-- filled by JS --></div>
+
+      <div class="hook-list" id="hookList">
+        <div class="hook-list__empty" id="hookListEmpty">Your 20 hooks will appear here after the AI read.</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ---------------- CENTER: LIVE PREVIEW MONITOR ---------------- -->
+  <section class="panel panel--center" aria-label="Live preview">
+
+    <div class="monitor-wrap">
+      <div class="monitor" id="monitor">
+        <span class="monitor__leader monitor__leader--tl"></span>
+        <span class="monitor__leader monitor__leader--tr"></span>
+        <span class="monitor__leader monitor__leader--bl"></span>
+        <span class="monitor__leader monitor__leader--br"></span>
+
+        <canvas id="stageCanvas" width="1080" height="1920"></canvas>
+
+        <div class="monitor__placeholder" id="monitorPlaceholder">
+          <span>9:16</span>
+          <p>Your export preview renders here</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="transport" id="transport" hidden>
+      <button class="btn btn--icon" id="btnPlayPause" title="Play / Pause">▶</button>
+      <input type="range" id="scrubber" min="0" max="1000" value="0" step="1">
+      <span class="transport__time"><span id="timeCurrent">0:00</span> / <span id="timeTotal">0:00</span></span>
+    </div>
+
+    <div class="layer-bar" id="layerBar" hidden>
+      <div class="layer-bar__list" id="layerList"><!-- filled by JS --></div>
+      <button class="btn btn--tiny btn--accent" id="btnAddLayer">+ Add text layer</button>
+    </div>
+  </section>
+
+  <!-- ---------------- RIGHT: STYLE CUSTOMIZATION ---------------- -->
+  <section class="panel panel--right" aria-label="Text style customization" id="styleSection" hidden>
+
+    <div class="panel__section">
+      <h2 class="panel__heading"><span class="tick">04</span>Edit &amp; style</h2>
+
+      <label class="field">
+        <span class="field__label">Hook text</span>
+        <textarea id="styleText" rows="3" placeholder="Your hook text…"></textarea>
+      </label>
+
+      <label class="field">
+        <span class="field__label">Animation</span>
+        <select id="styleAnimation">
+          <option value="pop">Pop</option>
+          <option value="zoom">Zoom</option>
+          <option value="shake">Shake</option>
+          <option value="typewriter">Typewriter</option>
+          <option value="bounce">Bounce</option>
+          <option value="slide">Slide</option>
+          <option value="fade">Fade</option>
+          <option value="glitch">Glitch</option>
+        </select>
+      </label>
+
+      <div class="field-row">
+        <label class="field">
+          <span class="field__label">Font</span>
+          <select id="styleFont">
+            <option value="'Arial Black', Arial, sans-serif">Arial Black</option>
+            <option value="Arial, sans-serif">Arial</option>
+            <option value="'Helvetica Neue', Helvetica, sans-serif">Helvetica</option>
+            <option value="Georgia, serif">Georgia</option>
+            <option value="'Times New Roman', serif">Times New Roman</option>
+            <option value="'Courier New', monospace">Courier New</option>
+            <option value="Impact, 'Arial Narrow', sans-serif">Impact</option>
+            <option value="Verdana, sans-serif">Verdana</option>
+            <option value="Tahoma, sans-serif">Tahoma</option>
+            <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+          </select>
+        </label>
+        <label class="field field--narrow">
+          <span class="field__label">Size</span>
+          <input type="number" id="styleFontSize" min="16" max="220" value="72">
+        </label>
+      </div>
+
+      <div class="field-row">
+        <label class="field field--narrow">
+          <span class="field__label">Color</span>
+          <input type="color" id="styleColor" value="#ffffff">
+        </label>
+        <label class="field field--narrow">
+          <span class="field__label">Weight</span>
+          <select id="styleWeight">
+            <option value="400">Regular</option>
+            <option value="600">Semibold</option>
+            <option value="800" selected>Bold</option>
+            <option value="900">Black</option>
+          </select>
+        </label>
+        <label class="field field--narrow">
+          <span class="field__label">Align</span>
+          <select id="styleAlign">
+            <option value="center" selected>Center</option>
+            <option value="left">Left</option>
+            <option value="right">Right</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="field-row">
+        <label class="field field--narrow">
+          <span class="field__label">Outline color</span>
+          <input type="color" id="styleOutlineColor" value="#000000">
+        </label>
+        <label class="field field--narrow">
+          <span class="field__label">Outline width</span>
+          <input type="range" id="styleOutlineWidth" min="0" max="20" value="6">
+        </label>
+      </div>
+
+      <div class="field-row">
+        <label class="field field--narrow">
+          <span class="field__label">Shadow color</span>
+          <input type="color" id="styleShadowColor" value="#000000">
+        </label>
+        <label class="field field--narrow">
+          <span class="field__label">Shadow blur</span>
+          <input type="range" id="styleShadowBlur" min="0" max="60" value="14">
+        </label>
+      </div>
+
+      <div class="field-row">
+        <label class="field field--narrow">
+          <span class="field__label">Shadow X</span>
+          <input type="range" id="styleShadowX" min="-30" max="30" value="4">
+        </label>
+        <label class="field field--narrow">
+          <span class="field__label">Shadow Y</span>
+          <input type="range" id="styleShadowY" min="-30" max="30" value="4">
+        </label>
+      </div>
+
+      <h3 class="panel__subheading">Position</h3>
+      <div class="position-grid" id="positionGrid">
+        <button data-pos="0,0">↖</button><button data-pos="0.5,0">↑</button><button data-pos="1,0">↗</button>
+        <button data-pos="0,0.5">←</button><button data-pos="0.5,0.5">•</button><button data-pos="1,0.5">→</button>
+        <button data-pos="0,1">↙</button><button data-pos="0.5,1" class="is-active">↓</button><button data-pos="1,1">↘</button>
+      </div>
+      <div class="field-row">
+        <label class="field field--narrow">
+          <span class="field__label">X offset</span>
+          <input type="range" id="stylePosX" min="0" max="1" step="0.01" value="0.5">
+        </label>
+        <label class="field field--narrow">
+          <span class="field__label">Y offset</span>
+          <input type="range" id="stylePosY" min="0" max="1" step="0.01" value="0.82">
+        </label>
+      </div>
+
+      <h3 class="panel__subheading">Timing</h3>
+      <div class="field-row">
+        <label class="field field--narrow">
+          <span class="field__label">Start (s)</span>
+          <input type="number" id="styleStart" min="0" step="0.1" value="0">
+        </label>
+        <label class="field field--narrow">
+          <span class="field__label">Duration (s)</span>
+          <input type="number" id="styleDuration" min="0.2" step="0.1" value="3">
+        </label>
+      </div>
+
+      <button class="btn btn--danger btn--full btn--tiny" id="btnDeleteLayer">Remove this layer</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================= EXPORT MODAL ============================= -->
+<div class="modal-overlay" id="exportModal" hidden>
+  <div class="modal">
+    <h2>Exporting your 9:16 MP4</h2>
+    <p class="modal__stage" id="exportStage">Preparing…</p>
+    <div class="analysis-progress__bar"><div class="analysis-progress__fill" id="exportProgressFill"></div></div>
+    <p class="modal__note">First export downloads the offline render engine (bundled locally, ~40&nbsp;MB) — this only happens once per session.</p>
+    <div class="modal__actions">
+      <button class="btn btn--ghost" id="btnCancelExport">Cancel</button>
+      <a class="btn btn--accent" id="btnDownloadResult" href="#" download="hook-export.mp4" hidden>Download MP4</a>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="hooks-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
