@@ -1,280 +1,501 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>AI Hook Generator — Offline Hook &amp; Overlay Studio</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>2026 Global Free App & Game Tester Finder</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #070a13;
+      color: #f8fafc;
+      min-height: 100vh;
+      padding: 1rem 0.75rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 940px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    header {
+      text-align: center;
+      padding: 0.5rem 0;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      color: #8b5cf6; /* Vibrant Purple */
+      margin-bottom: 0.35rem;
+      line-height: 1.2;
+    }
+
+    header p {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
+    .card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      width: 100%;
+    }
+
+    label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    input[type="text"], select {
+      background: #070a13;
+      border: 1px solid #1e293b;
+      color: #f8fafc;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+
+    input[type="text"]:focus, select:focus {
+      border-color: #8b5cf6;
+    }
+
+    .grid-row-2 {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .grid-row-3 {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .grid-row-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .grid-row-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+      }
+      header h1 {
+        font-size: 2.1rem;
+      }
+    }
+
+    .btn-generate {
+      background: #8b5cf6;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 1rem;
+      padding: 0.85rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+      margin-top: 0.25rem;
+    }
+
+    .btn-generate:hover {
+      background: #7c3aed;
+    }
+
+    .results-section h2 {
+      font-size: 1.1rem;
+      color: #f1f5f9;
+      margin-bottom: 0.75rem;
+    }
+
+    .links-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    /* Anti-Overlap Card Layout */
+    .query-card {
+      background: #0f172a;
+      border-left: 4px solid #8b5cf6;
+      padding: 1rem;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    @media (min-width: 640px) {
+      .query-card {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    .query-card.ru-card {
+      border-left-color: #06b6d4; /* Cyan for Russia/VK */
+    }
+
+    .query-card.global-card {
+      border-left-color: #ec4899; /* Pink for Global Social */
+    }
+
+    .query-info {
+      flex: 1;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .query-info .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      align-items: center;
+      margin-bottom: 0.35rem;
+    }
+
+    .query-info .type-tag {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .tag-free {
+      background-color: rgba(139, 92, 246, 0.2);
+      color: #c084fc;
+    }
+
+    .tag-ru {
+      background-color: rgba(6, 182, 212, 0.2);
+      color: #22d3ee;
+    }
+
+    .tag-global {
+      background-color: rgba(236, 72, 153, 0.2);
+      color: #f472b6;
+    }
+
+    .query-info .title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #f8fafc;
+      word-break: break-word;
+    }
+
+    .query-info .dork-text {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-family: monospace;
+      margin-top: 0.35rem;
+      word-break: break-all;
+      overflow-wrap: anywhere;
+      background: #070a13;
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid #1e293b;
+    }
+
+    .btn-search {
+      background-color: #8b5cf6;
+      color: #ffffff;
+      padding: 0.65rem 1rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-align: center;
+      width: 100%;
+      display: block;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+
+    @media (min-width: 640px) {
+      .btn-search {
+        width: auto;
+        display: inline-block;
+      }
+    }
+
+    .btn-search.ru-btn {
+      background-color: #06b6d4;
+      color: #070a13;
+    }
+
+    .btn-search.global-btn {
+      background-color: #ec4899;
+      color: #ffffff;
+    }
+
+    .btn-search:hover {
+      opacity: 0.85;
+    }
+  </style>
 </head>
 <body>
 
-<!-- ============================= TOP BAR ============================= -->
-<header class="topbar">
-  <div class="topbar__brand">
-    <span class="rec-dot" aria-hidden="true"></span>
-    <div class="topbar__title">
-      <h1>AI HOOK GENERATOR</h1>
-      <p>Offline hook writer &amp; overlay studio · 9:16 export</p>
-    </div>
-  </div>
+  <div class="container">
+    <header>
+      <h1>🌍 Global Free App & Game Tester Finder</h1>
+      <p>Discover people willing to test games or apps for free across TikTok, FB, VK, X, Reddit & More</p>
+    </header>
 
-  <div class="topbar__actions">
-    <div class="clip-status" id="clipStatus">
-      <span class="clip-status__dot" id="clipStatusDot"></span>
-      <span id="clipStatusText">No clip loaded</span>
-    </div>
-    <button class="btn btn--ghost" id="btnNewProject" title="Clear and start over">New</button>
-    <button class="btn btn--accent" id="btnExport" disabled>Export MP4</button>
-  </div>
-</header>
+    <div class="card">
+      <div class="grid-row-2">
+        <div class="form-group">
+          <label for="countryTarget">Target Country / Region</label>
+          <select id="countryTarget">
+            <option value="usa">🇺🇸 United States (USA)</option>
+            <option value="russia">🇷🇺 Russia (VK, Telegram & Russian Web)</option>
+            <option value="power_countries">🌐 Powerful Nations (USA, Russia, UK, Germany, Japan, Korea)</option>
+            <option value="europe">🇪🇺 UK & European Union</option>
+            <option value="asia">🇯🇵 East Asia (Japan, South Korea, Taiwan)</option>
+            <option value="worldwide">🌍 Worldwide / Any Country</option>
+          </select>
+        </div>
 
-<!-- ============================= WORKSPACE ============================= -->
-<main class="workspace">
-
-  <!-- ---------------- LEFT: SOURCE + AI ANALYSIS + HOOK LIBRARY ---------------- -->
-  <section class="panel panel--left" aria-label="Source, analysis and hook library">
-
-    <div class="panel__section" id="uploadSection">
-      <h2 class="panel__heading"><span class="tick">01</span>Source clip</h2>
-
-      <label class="dropzone" id="dropzone" for="fileInput">
-        <input type="file" id="fileInput" accept="video/mp4,video/quicktime,video/webm,video/*,image/*" hidden>
-        <svg class="dropzone__icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-          <rect x="6" y="6" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
-          <path d="M16 30l6-8 5 6 4-5 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="18" cy="17" r="2.4" fill="currentColor"/>
-        </svg>
-        <span class="dropzone__text"><strong>Drop a video or image</strong><br>MP4, MOV, WEBM, JPG, PNG</span>
-      </label>
-
-      <div class="source-preview" id="sourcePreview" hidden>
-        <video id="sourceThumbVideo" muted playsinline></video>
-        <img id="sourceThumbImage" alt="Uploaded image preview" hidden>
-        <div class="source-preview__meta">
-          <span id="sourceFileName">—</span>
-          <button class="btn btn--tiny btn--ghost" id="btnReplaceSource">Replace</button>
+        <div class="form-group">
+          <label for="appCategory">Testing Project Type</label>
+          <select id="appCategory">
+            <option value="mobile_games">🎮 Mobile Games (2D / 3D / Android / iOS)</option>
+            <option value="general_apps">📱 Mobile Apps & Web Utilities</option>
+            <option value="indie_web">🌐 Web / Canvas / HTML5 Games</option>
+            <option value="all_projects">⚡ Any Game or App Project</option>
+          </select>
         </div>
       </div>
-    </div>
 
-    <div class="panel__section" id="analysisSection">
-      <h2 class="panel__heading"><span class="tick">02</span>AI signal read</h2>
-      <p class="panel__hint">Reads the first few seconds — motion, light, color, subject presence, and audio energy — entirely on this device. No upload leaves your browser.</p>
+      <div class="grid-row-3">
+        <div class="form-group">
+          <label for="socialPlatform">Target Social Platform</label>
+          <select id="socialPlatform">
+            <option value="all_social">🌐 All Social Media (TikTok, FB, VK, Reddit, X, IG)</option>
+            <option value="tiktok">🎵 TikTok (Videos, Captions & Bio Links)</option>
+            <option value="facebook">📘 Facebook (Groups, Posts & Comments)</option>
+            <option value="vk">🔵 VKontakte (Russia's Top Social Network)</option>
+            <option value="reddit">🔴 Reddit (Subreddits & Playtest Threads)</option>
+            <option value="x_twitter">🪶 X (Twitter) & Threads</option>
+            <option value="telegram">✈️ Telegram (Channels & Testing Groups)</option>
+          </select>
+        </div>
 
-      <div class="analysis-idle" id="analysisIdle">Load a clip to run the read.</div>
+        <div class="form-group">
+          <label for="leadIntent">Volunteer Intent</label>
+          <select id="leadIntent">
+            <option value="free_testers">🆓 Willing to Test for Free ("will test your game/app")</option>
+            <option value="beta_seekers">🧪 Active Beta Testers ("looking for early access")</option>
+            <option value="bug_hunters">🐛 Free QA & Bug Testers ("give feedback / find bugs")</option>
+            <option value="all_intents">🔥 All Free Tester Requests</option>
+          </select>
+        </div>
 
-      <div class="analysis-progress" id="analysisProgress" hidden>
-        <div class="analysis-progress__bar"><div class="analysis-progress__fill" id="analysisProgressFill"></div></div>
-        <span id="analysisProgressLabel">Sampling frames…</span>
-      </div>
-
-      <div class="analysis-results" id="analysisResults" hidden>
-        <div class="signal-grid" id="signalGrid"><!-- filled by JS --></div>
-        <div class="palette-row" id="paletteRow"><!-- filled by JS --></div>
-        <div class="category-weights" id="categoryWeights"><!-- filled by JS --></div>
-        <button class="btn btn--ghost btn--full" id="btnRegenerateHooks">Regenerate hook selection</button>
-      </div>
-    </div>
-
-    <div class="panel__section panel__section--grow" id="hookLibrarySection">
-      <h2 class="panel__heading"><span class="tick">03</span>Hook library <span class="count-badge" id="hookCount">0</span></h2>
-
-      <div class="category-filters" id="categoryFilters"><!-- filled by JS --></div>
-
-      <div class="hook-list" id="hookList">
-        <div class="hook-list__empty" id="hookListEmpty">Your 20 hooks will appear here after the AI read.</div>
-      </div>
-    </div>
-
-  </section>
-
-  <!-- ---------------- CENTER: LIVE PREVIEW MONITOR ---------------- -->
-  <section class="panel panel--center" aria-label="Live preview">
-
-    <div class="monitor-wrap">
-      <div class="monitor" id="monitor">
-        <span class="monitor__leader monitor__leader--tl"></span>
-        <span class="monitor__leader monitor__leader--tr"></span>
-        <span class="monitor__leader monitor__leader--bl"></span>
-        <span class="monitor__leader monitor__leader--br"></span>
-
-        <canvas id="stageCanvas" width="1080" height="1920"></canvas>
-
-        <div class="monitor__placeholder" id="monitorPlaceholder">
-          <span>9:16</span>
-          <p>Your export preview renders here</p>
+        <div class="form-group">
+          <label for="recency">Post Recency</label>
+          <select id="recency">
+            <option value="m">Past Month (Active Testers)</option>
+            <option value="w">Past Week (Fresh Volunteers)</option>
+            <option value="2026">Entire Year 2026</option>
+          </select>
         </div>
       </div>
+
+      <button class="btn-generate" onclick="generateTesterQueries()">Find Free App & Game Testers</button>
     </div>
 
-    <div class="transport" id="transport" hidden>
-      <button class="btn btn--icon" id="btnPlayPause" title="Play / Pause">▶</button>
-      <input type="range" id="scrubber" min="0" max="1000" value="0" step="1">
-      <span class="transport__time"><span id="timeCurrent">0:00</span> / <span id="timeTotal">0:00</span></span>
-    </div>
-
-    <div class="layer-bar" id="layerBar" hidden>
-      <div class="layer-bar__list" id="layerList"><!-- filled by JS --></div>
-      <button class="btn btn--tiny btn--accent" id="btnAddLayer">+ Add text layer</button>
-    </div>
-  </section>
-
-  <!-- ---------------- RIGHT: STYLE CUSTOMIZATION ---------------- -->
-  <section class="panel panel--right" aria-label="Text style customization" id="styleSection" hidden>
-
-    <div class="panel__section">
-      <h2 class="panel__heading"><span class="tick">04</span>Edit &amp; style</h2>
-
-      <label class="field">
-        <span class="field__label">Hook text</span>
-        <textarea id="styleText" rows="3" placeholder="Your hook text…"></textarea>
-      </label>
-
-      <label class="field">
-        <span class="field__label">Animation</span>
-        <select id="styleAnimation">
-          <option value="pop">Pop</option>
-          <option value="zoom">Zoom</option>
-          <option value="shake">Shake</option>
-          <option value="typewriter">Typewriter</option>
-          <option value="bounce">Bounce</option>
-          <option value="slide">Slide</option>
-          <option value="fade">Fade</option>
-          <option value="glitch">Glitch</option>
-        </select>
-      </label>
-
-      <div class="field-row">
-        <label class="field">
-          <span class="field__label">Font</span>
-          <select id="styleFont">
-            <option value="'Arial Black', Arial, sans-serif">Arial Black</option>
-            <option value="Arial, sans-serif">Arial</option>
-            <option value="'Helvetica Neue', Helvetica, sans-serif">Helvetica</option>
-            <option value="Georgia, serif">Georgia</option>
-            <option value="'Times New Roman', serif">Times New Roman</option>
-            <option value="'Courier New', monospace">Courier New</option>
-            <option value="Impact, 'Arial Narrow', sans-serif">Impact</option>
-            <option value="Verdana, sans-serif">Verdana</option>
-            <option value="Tahoma, sans-serif">Tahoma</option>
-            <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
-          </select>
-        </label>
-        <label class="field field--narrow">
-          <span class="field__label">Size</span>
-          <input type="number" id="styleFontSize" min="16" max="220" value="72">
-        </label>
+    <section class="results-section">
+      <h2>Live Search Launchers</h2>
+      <div class="links-grid" id="resultsGrid">
+        <p style="color: #94a3b8; font-style: italic;">Select options above and click Generate.</p>
       </div>
-
-      <div class="field-row">
-        <label class="field field--narrow">
-          <span class="field__label">Color</span>
-          <input type="color" id="styleColor" value="#ffffff">
-        </label>
-        <label class="field field--narrow">
-          <span class="field__label">Weight</span>
-          <select id="styleWeight">
-            <option value="400">Regular</option>
-            <option value="600">Semibold</option>
-            <option value="800" selected>Bold</option>
-            <option value="900">Black</option>
-          </select>
-        </label>
-        <label class="field field--narrow">
-          <span class="field__label">Align</span>
-          <select id="styleAlign">
-            <option value="center" selected>Center</option>
-            <option value="left">Left</option>
-            <option value="right">Right</option>
-          </select>
-        </label>
-      </div>
-
-      <div class="field-row">
-        <label class="field field--narrow">
-          <span class="field__label">Outline color</span>
-          <input type="color" id="styleOutlineColor" value="#000000">
-        </label>
-        <label class="field field--narrow">
-          <span class="field__label">Outline width</span>
-          <input type="range" id="styleOutlineWidth" min="0" max="20" value="6">
-        </label>
-      </div>
-
-      <div class="field-row">
-        <label class="field field--narrow">
-          <span class="field__label">Shadow color</span>
-          <input type="color" id="styleShadowColor" value="#000000">
-        </label>
-        <label class="field field--narrow">
-          <span class="field__label">Shadow blur</span>
-          <input type="range" id="styleShadowBlur" min="0" max="60" value="14">
-        </label>
-      </div>
-
-      <div class="field-row">
-        <label class="field field--narrow">
-          <span class="field__label">Shadow X</span>
-          <input type="range" id="styleShadowX" min="-30" max="30" value="4">
-        </label>
-        <label class="field field--narrow">
-          <span class="field__label">Shadow Y</span>
-          <input type="range" id="styleShadowY" min="-30" max="30" value="4">
-        </label>
-      </div>
-
-      <h3 class="panel__subheading">Position</h3>
-      <div class="position-grid" id="positionGrid">
-        <button data-pos="0,0">↖</button><button data-pos="0.5,0">↑</button><button data-pos="1,0">↗</button>
-        <button data-pos="0,0.5">←</button><button data-pos="0.5,0.5">•</button><button data-pos="1,0.5">→</button>
-        <button data-pos="0,1">↙</button><button data-pos="0.5,1" class="is-active">↓</button><button data-pos="1,1">↘</button>
-      </div>
-      <div class="field-row">
-        <label class="field field--narrow">
-          <span class="field__label">X offset</span>
-          <input type="range" id="stylePosX" min="0" max="1" step="0.01" value="0.5">
-        </label>
-        <label class="field field--narrow">
-          <span class="field__label">Y offset</span>
-          <input type="range" id="stylePosY" min="0" max="1" step="0.01" value="0.82">
-        </label>
-      </div>
-
-      <h3 class="panel__subheading">Timing</h3>
-      <div class="field-row">
-        <label class="field field--narrow">
-          <span class="field__label">Start (s)</span>
-          <input type="number" id="styleStart" min="0" step="0.1" value="0">
-        </label>
-        <label class="field field--narrow">
-          <span class="field__label">Duration (s)</span>
-          <input type="number" id="styleDuration" min="0.2" step="0.1" value="3">
-        </label>
-      </div>
-
-      <button class="btn btn--danger btn--full btn--tiny" id="btnDeleteLayer">Remove this layer</button>
-    </div>
-  </section>
-
-</main>
-
-<!-- ============================= EXPORT MODAL ============================= -->
-<div class="modal-overlay" id="exportModal" hidden>
-  <div class="modal">
-    <h2>Exporting your 9:16 MP4</h2>
-    <p class="modal__stage" id="exportStage">Preparing…</p>
-    <div class="analysis-progress__bar"><div class="analysis-progress__fill" id="exportProgressFill"></div></div>
-    <p class="modal__note">First export downloads the offline render engine (bundled locally, ~40&nbsp;MB) — this only happens once per session.</p>
-    <div class="modal__actions">
-      <button class="btn btn--ghost" id="btnCancelExport">Cancel</button>
-      <a class="btn btn--accent" id="btnDownloadResult" href="#" download="hook-export.mp4" hidden>Download MP4</a>
-    </div>
+    </section>
   </div>
-</div>
 
-<div class="toast" id="toast" hidden></div>
+  <script>
+    function generateTesterQueries() {
+      const region = document.getElementById('countryTarget').value;
+      const projectType = document.getElementById('appCategory').value;
+      const platform = document.getElementById('socialPlatform').value;
+      const intent = document.getElementById('leadIntent').value;
+      const recency = document.getElementById('recency').value;
+      const resultsGrid = document.getElementById('resultsGrid');
 
-<script src="hooks-data.js"></script>
-<script src="app.js"></script>
+      resultsGrid.innerHTML = '';
+
+      const recencyParam = recency === '2026' ? '' : `&tbs=qdr:${recency}`;
+
+      // Social Platform Sites mapping
+      const platformSites = {
+        all_social: '(site:facebook.com OR site:tiktok.com OR site:vk.com OR site:reddit.com OR site:twitter.com OR site:x.com OR site:instagram.com OR site:youtube.com OR site:t.me)',
+        tiktok: 'site:tiktok.com',
+        facebook: 'site:facebook.com',
+        vk: 'site:vk.com',
+        reddit: 'site:reddit.com',
+        x_twitter: '(site:twitter.com OR site:x.com)',
+        telegram: 'site:t.me'
+      };
+
+      const selectedSite = platformSites[platform];
+
+      // Regional query qualifiers
+      let locationTag = '';
+      if (region === 'usa') {
+        locationTag = '("USA" OR "US" OR "United States" OR "America")';
+      } else if (region === 'russia') {
+        locationTag = '("Russia" OR "Russian" OR "Россия" OR "бета-тест" OR "тестирование")';
+      } else if (region === 'power_countries') {
+        locationTag = '("USA" OR "Russia" OR "UK" OR "Germany" OR "Japan" OR "Korea" OR "Россия")';
+      } else if (region === 'europe') {
+        locationTag = '("UK" OR "Germany" OR "France" OR "Europe" OR "United Kingdom")';
+      } else if (region === 'asia') {
+        locationTag = '("Japan" OR "Korea" OR "Taiwan" OR "Tokyo" OR "Seoul")';
+      } else {
+        locationTag = ''; // Global
+      }
+
+      // Project Type terms
+      let projectTerms = '';
+      if (projectType === 'mobile_games') {
+        projectTerms = '("mobile game" OR "android game" OR "ios game" OR "2D game")';
+      } else if (projectType === 'general_apps') {
+        projectTerms = '("mobile app" OR "android app" OR "ios app" OR "new app")';
+      } else if (projectType === 'indie_web') {
+        projectTerms = '("indie game" OR "HTML5 game" OR "web game" OR "canvas game")';
+      } else {
+        projectTerms = '("game" OR "app" OR "mobile game" OR "mobile app")';
+      }
+
+      // Intent phrasing (English & Russian equivalents)
+      let englishIntent = '';
+      let russianIntent = '("тестирование игр" OR "бета тест" OR "хочу протестировать" OR "бесплатный тест")';
+
+      if (intent === 'free_testers') {
+        englishIntent = '("will test your game for free" OR "test your app for free" OR "free playtester" OR "free playtest" OR "volunteer tester")';
+      } else if (intent === 'beta_seekers') {
+        englishIntent = '("looking to beta test" OR "want to test apps" OR "beta tester volunteer" OR "early access playtester")';
+      } else if (intent === 'bug_hunters') {
+        englishIntent = '("give feedback on your game" OR "find bugs in your app" OR "free QA tester" OR "free app feedback")';
+      } else {
+        englishIntent = '("will test for free" OR "free playtester" OR "beta test your app" OR "test my game for free" OR "free QA")';
+      }
+
+      let searchConfigs = [];
+
+      // Dork 1: Global Free Testers & Volunteers
+      searchConfigs.push({
+        title: "English / US Free Playtesters & Volunteer App Testers",
+        category: "free",
+        dork: `${selectedSite} ${projectTerms} ${englishIntent} ${locationTag} after:2026-01-01`,
+        type: "web"
+      });
+
+      // Dork 2: Russian & VK/Telegram Free Testers (Specific Russian phrases for high hit rate)
+      searchConfigs.push({
+        title: "Russian (VK / Telegram) Free Testers & Community Beta Groups",
+        category: "ru",
+        dork: `(site:vk.com OR site:t.me OR site:facebook.com) ${projectTerms} ${russianIntent} ("бесплатно" OR "тестировщик") after:2026-01-01`,
+        type: "web"
+      });
+
+      // Dork 3: Social Media Posts Seeking Apps/Games to Test ("Drop link / DM me")
+      searchConfigs.push({
+        title: "Social Posts Asking Developers to Send Apps/Games for Free Testing",
+        category: "global",
+        dork: `${selectedSite} ${projectTerms} ("send me your app" OR "drop your game link" OR "I will playtest") ${locationTag} "2026"`,
+        type: "web"
+      });
+
+      // Dork 4: WhatsApp & Telegram Direct Contact Drops for Testers
+      searchConfigs.push({
+        title: "Direct Tester Contact Drops (+1 / wa.me / t.me tester groups)",
+        category: "free",
+        dork: `${selectedSite} ${projectTerms} ("wa.me/" OR "t.me/" OR "chat.whatsapp.com") ${englishIntent} after:2026-01-01`,
+        type: "web"
+      });
+
+      searchConfigs.forEach(cfg => {
+        const queryEncoded = encodeURIComponent(cfg.dork);
+        const searchUrl = `https://www.google.com/search?q=${queryEncoded}${recencyParam}`;
+
+        const isRu = cfg.category === 'ru';
+        const isGlobal = cfg.category === 'global';
+
+        let tagClass = 'tag-free';
+        let btnClass = '';
+        let cardClass = '';
+
+        if (isRu) {
+          tagClass = 'tag-ru';
+          btnClass = 'ru-btn';
+          cardClass = 'ru-card';
+        } else if (isGlobal) {
+          tagClass = 'tag-global';
+          btnClass = 'global-btn';
+          cardClass = 'global-card';
+        }
+
+        const card = document.createElement('div');
+        card.className = `query-card ${cardClass}`;
+
+        card.innerHTML = `
+          <div class="query-info">
+            <div class="tag-container">
+              <span class="type-tag ${tagClass}">🌍 GLOBAL FREE TESTER DORK</span>
+              <span class="title">${cfg.title}</span>
+            </div>
+            <div class="dork-text">${escapeHtml(cfg.dork)}</div>
+          </div>
+          <a href="${searchUrl}" target="_blank" rel="noopener noreferrer" class="btn-search ${btnClass}">Launch Search</a>
+        `;
+        resultsGrid.appendChild(card);
+      });
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      generateTesterQueries();
+    });
+  </script>
 </body>
 </html>
